@@ -12,21 +12,31 @@
 // 4. Clique em "API"
 // 5. Copie "Project URL" e "anon public key"
 
-const SUPABASE_URL = 'https://gzetvnqnqmjrkcfsjxyk.supabase.co'; // ← COLE SUA URL AQUI
-const SUPABASE_ANON_KEY = 'sb_publishable_i5bIlH9xOl7Oeh3MEVnuXg_F7Zp3aZ5'; // ← COLE SUA KEY AQUI
+const SUPABASE_URL = 'https://gzetvnqnqmjrkcfsjxyk.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_i5bIlH9xOl7Oeh3MEVnuXg_F7Zp3aZ5';
 
-// Verificar se as credenciais foram alteradas
-if (SUPABASE_URL === 'https://gzetvnqnqmjrkcfsjxyk.supabase.co') {
-    console.error('⚠️ ERRO: Você precisa configurar suas credenciais do Supabase!');
-    console.error('📝 Edite o arquivo supabase-config.js e cole suas credenciais.');
-    alert('Configure suas credenciais do Supabase no arquivo supabase-config.js');
+// Verificar se o SDK foi carregado
+if (typeof window.supabase === 'undefined') {
+    console.error('❌ ERRO CRÍTICO: SDK do Supabase não foi carregado!');
+    console.error('📝 Certifique-se que o script do SDK está ANTES deste arquivo no HTML');
+    alert('ERRO: SDK do Supabase não carregado. Verifique o console (F12).');
 }
 
 // Inicializar cliente Supabase
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+let supabase = null;
 
-console.log('✅ Supabase inicializado!');
-console.log('🔗 URL do projeto:', SUPABASE_URL);
+try {
+    if (window.supabase && window.supabase.createClient) {
+        supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        console.log('✅ Supabase inicializado com sucesso!');
+        console.log('🔗 URL do projeto:', SUPABASE_URL);
+    } else {
+        console.error('❌ window.supabase.createClient não está disponível');
+    }
+} catch (error) {
+    console.error('❌ Erro ao inicializar Supabase:', error);
+    alert('Erro ao conectar com Supabase: ' + error.message);
+}
 
-// Exportar para uso global (opcional)
+// Exportar para uso global
 window.supabaseClient = supabase;
