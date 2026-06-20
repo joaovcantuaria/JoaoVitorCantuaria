@@ -24,22 +24,27 @@ navLinks.forEach(link => {
     });
 });
 
-// Rolagem Suave para as Seções
+// Rolagem Suave para as Seções (apenas links internos)
 navLinks.forEach(link => {
     link.addEventListener('click', (e) => {
-        e.preventDefault();
         const targetId = link.getAttribute('href');
-        const targetSection = document.querySelector(targetId);
         
-        if (targetSection) {
-            const headerHeight = header.offsetHeight;
-            const targetPosition = targetSection.offsetTop - headerHeight;
+        // Verificar se é um link interno (começa com #)
+        if (targetId && targetId.startsWith('#')) {
+            e.preventDefault();
+            const targetSection = document.querySelector(targetId);
             
-            window.scrollTo({
-                top: targetPosition,
-                behavior: 'smooth'
-            });
+            if (targetSection) {
+                const headerHeight = header.offsetHeight;
+                const targetPosition = targetSection.offsetTop - headerHeight;
+                
+                window.scrollTo({
+                    top: targetPosition,
+                    behavior: 'smooth'
+                });
+            }
         }
+        // Se não começar com #, deixa o navegador fazer a navegação normal
     });
 });
 
