@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel Admin - João V. Cantuária</title>
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="../dashboard-styles.css">
+    <link rel="stylesheet" href="admin-styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="dashboard-body">
+    <!-- Sidebar -->
+    <aside class="sidebar admin-sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                <img src="../logo-placeholder.png" alt="João V. Cantuária" class="logo-img">
+                <span class="logo-text">ADMIN</span>
+            </div>
+            <button class="sidebar-toggle" id="sidebarToggle">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+
+        <nav class="sidebar-nav">
+            <a href="#dashboard" class="nav-item active" data-section="dashboard">
+                <i class="fas fa-chart-line"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="#clientes" class="nav-item" data-section="clientes">
+                <i class="fas fa-users"></i>
+                <span>Clientes</span>
+            </a>
+            <a href="#projetos" class="nav-item" data-section="projetos">
+                <i class="fas fa-folder-open"></i>
+                <span>Projetos</span>
+            </a>
+            <a href="#provas" class="nav-item" data-section="provas">
+                <i class="fas fa-images"></i>
+                <span>Provas de Fotos</span>
+                <span class="badge">2</span>
+            </a>
+            <a href="#financeiro" class="nav-item" data-section="financeiro">
+                <i class="fas fa-dollar-sign"></i>
+                <span>Financeiro</span>
+            </a>
+            <a href="#portfolio" class="nav-item" data-section="portfolio">
+                <i class="fas fa-camera"></i>
+                <span>Portfólio (Site)</span>
+            </a>
+            <a href="#depoimentos" class="nav-item" data-section="depoimentos">
+                <i class="fas fa-comment-dots"></i>
+                <span>Depoimentos (Site)</span>
+            </a>
+            <a href="#configuracoes" class="nav-item" data-section="configuracoes">
+                <i class="fas fa-cog"></i>
+                <span>Configurações</span>
+            </a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <button class="btn-logout" id="logoutBtn">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Sair</span>
+            </button>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Top Bar -->
+        <header class="topbar">
+            <button class="mobile-menu-btn" id="mobileMenuBtn">
+                <i class="fas fa-bars"></i>
+            </button>
+            
+            <h1 class="page-title">Dashboard Admin</h1>
+            
+            <div class="topbar-actions">
+                <button class="notification-btn">
+                    <i class="fas fa-bell"></i>
+                    <span class="notification-badge">3</span>
+                </button>
+                
+                <div class="user-menu">
+                    <img src="https://ui-avatars.com/api/?name=Admin&background=FFD700&color=000" 
+                         alt="Admin" class="user-avatar">
+                    <span class="user-name">Administrador</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+            </div>
+        </header>
+
+        <!-- Content Area -->
+        <div class="content-area">
+            <!-- Dashboard Section -->
+            <section id="dashboard-section" class="content-section active">
+                <div class="admin-section-header">
+                    <h2 class="admin-section-title">Visão Geral</h2>
+                    <button class="btn btn-primary">
+                        <i class="fas fa-sync"></i> Atualizar
+                    </button>
+                </div>
+
+                <!-- Quick Stats -->
+                <div class="quick-stats">
+                    <div class="quick-stat-card">
+                        <div class="quick-stat-icon money">
+                            <i class="fas fa-dollar-sign"></i>
+                        </div>
+                        <div class="quick-stat-info">
+                            <h4>Receita do Mês</h4>
+                            <h3>R$ 15.450</h3>
+                        </div>
+                    </div>
+
+                    <div class="quick-stat-card">
+                        <div class="quick-stat-icon clients">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="quick-stat-info">
+                            <h4>Total de Clientes</h4>
+                            <h3>32</h3>
+                        </div>
+                    </div>
+
+                    <div class="quick-stat-card">
+                        <div class="quick-stat-icon projects">
+                            <i class="fas fa-folder-open"></i>
+                        </div>
+                        <div class="quick-stat-info">
+                            <h4>Projetos Ativos</h4>
+                            <h3>8</h3>
+                        </div>
+                    </div>
+
+                    <div class="quick-stat-card">
+                        <div class="quick-stat-icon pending">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="quick-stat-info">
+                            <h4>Provas Pendentes</h4>
+                            <h3>2</h3>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Activity -->
+                <div class="section-card">
+                    <div class="card-header">
+                        <h3>Atividades Recentes</h3>
+                    </div>
+                    <div class="projects-list">
+                        <div class="project-item">
+                            <div class="project-icon">
+                                <i class="fas fa-user-plus"></i>
+                            </div>
+                            <div class="project-info">
+                                <h4>Novo cliente cadastrado</h4>
+                                <p>Maria Silva - há 2 horas</p>
+                            </div>
+                        </div>
+                        <div class="project-item">
+                            <div class="project-icon">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                            <div class="project-info">
+                                <h4>Projeto concluído</h4>
+                                <p>Ensaio Corporativo XYZ - há 5 horas</p>
+                            </div>
+                        </div>
+                        <div class="project-item">
+                            <div class="project-icon">
+                                <i class="fas fa-dollar-sign"></i>
+                            </div>
+                            <div class="project-info">
+                                <h4>Pagamento recebido</h4>
+                                <p>R$ 2.500,00 - João Santos - há 1 dia</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Clientes Section -->
+            <section id="clientes-section" class="content-section">
+                <div class="admin-section-header">
+                    <h2 class="admin-section-title">Gerenciar Clientes</h2>
+                    <button class="btn btn-primary" id="addClientBtn">
+                        <i class="fas fa-user-plus"></i> Adicionar Cliente
+                    </button>
+                </div>
+
+                <div class="data-table-wrapper">
+                    <div class="table-header">
+                        <div class="table-search">
+                            <input type="text" class="search-input" placeholder="Buscar cliente...">
+                            <button class="btn btn-primary">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Nome</th>
+                                <th>E-mail</th>
+                                <th>Telefone</th>
+                                <th>Projetos</th>
+                                <th>Cadastro</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="clientsTableBody">
+                            <!-- Dados serão carregados via JavaScript -->
+                            <tr>
+                                <td>Maria Silva</td>
+                                <td>maria@email.com</td>
+                                <td>(11) 98765-4321</td>
+                                <td>3</td>
+                                <td>15/06/2026</td>
+                                <td class="table-actions">
+                                    <button class="btn-icon-action view" title="Ver">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button class="btn-icon-action edit" title="Editar">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn-icon-action delete" title="Excluir">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Projetos Section -->
+            <section id="projetos-section" class="content-section">
+                <div class="admin-section-header">
+                    <h2 class="admin-section-title">Gerenciar Projetos</h2>
+                    <button class="btn btn-primary" id="addProjectBtn">
+                        <i class="fas fa-plus"></i> Novo Projeto
+                    </button>
+                </div>
+
+                <div class="projects-grid">
+                    <!-- Projeto exemplo -->
+                    <div class="project-card">
+                        <div class="project-card-header">
+                            <span class="status-badge status-progress">Em Andamento</span>
+                            <button class="btn-icon"><i class="fas fa-ellipsis-v"></i></button>
+                        </div>
+                        <h3>Ensaio Fotográfico Corporativo</h3>
+                        <p>Cliente: Maria Silva</p>
+                        <div class="project-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 65%;"></div>
+                            </div>
+                            <span class="progress-text">65% Concluído</span>
+                        </div>
+                        <div class="project-meta">
+                            <span><i class="fas fa-calendar"></i> 15/06/2026</span>
+                            <span><i class="fas fa-image"></i> 45 fotos</span>
+                        </div>
+                        <button class="btn btn-primary btn-block" style="margin-top: 1rem;">
+                            <i class="fas fa-edit"></i> Editar Projeto
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Provas de Fotos Section -->
+            <section id="provas-section" class="content-section">
+                <div class="admin-section-header">
+                    <h2 class="admin-section-title">Provas de Fotos</h2>
+                    <button class="btn btn-primary" id="addProofBtn">
+                        <i class="fas fa-upload"></i> Nova Prova
+                    </button>
+                </div>
+
+                <p style="color: var(--color-gray); margin-bottom: 2rem;">
+                    <i class="fas fa-info-circle"></i>
+                    As fotos aqui enviadas terão marca d'água e proteção contra download para visualização do cliente.
+                </p>
+
+                <!-- Lista de provas -->
+                <div class="data-table-wrapper">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Cliente</th>
+                                <th>Projeto</th>
+                                <th>Fotos</th>
+                                <th>Selecionadas</th>
+                                <th>Status</th>
+                                <th>Data</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Maria Silva</td>
+                                <td>Ensaio Corporativo</td>
+                                <td>120</td>
+                                <td>15/120</td>
+                                <td><span class="status-badge status-review">Aguardando Seleção</span></td>
+                                <td>18/06/2026</td>
+                                <td class="table-actions">
+                                    <button class="btn-icon-action view" title="Ver Prova">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button class="btn-icon-action edit" title="Editar">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Financeiro Section -->
+            <section id="financeiro-section" class="content-section">
+                <div class="admin-section-header">
+                    <h2 class="admin-section-title">Gestão Financeira</h2>
+                    <button class="btn btn-primary" id="addTransactionBtn">
+                        <i class="fas fa-plus"></i> Nova Transação
+                    </button>
+                </div>
+
+                <!-- Resumo Financeiro -->
+                <div class="financial-summary">
+                    <div class="financial-card income">
+                        <h3>Receitas (Mês)</h3>
+                        <p class="amount">R$ 18.500,00</p>
+                        <p class="period">Junho 2026</p>
+                    </div>
+                    <div class="financial-card expense">
+                        <h3>Despesas (Mês)</h3>
+                        <p class="amount">R$ 3.050,00</p>
+                        <p class="period">Junho 2026</p>
+                    </div>
+                    <div class="financial-card balance">
+                        <h3>Saldo Líquido</h3>
+                        <p class="amount">R$ 15.450,00</p>
+                        <p class="period">Lucro do mês</p>
+                    </div>
+                </div>
+
+                <!-- Tabs -->
+                <div class="tab-navigation">
+                    <button class="tab-button active" data-tab="receitas">Receitas</button>
+                    <button class="tab-button" data-tab="despesas">Despesas</button>
+                    <button class="tab-button" data-tab="relatorios">Relatórios</button>
+                </div>
+
+                <!-- Tab Receitas -->
+                <div class="tab-content active" id="tab-receitas">
+                    <div class="data-table-wrapper">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Data</th>
+                                    <th>Cliente</th>
+                                    <th>Descrição</th>
+                                    <th>Método</th>
+                                    <th>Valor</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>20/06/2026</td>
+                                    <td>João Santos</td>
+                                    <td>Ensaio Corporativo</td>
+                                    <td>PIX</td>
+                                    <td class="transaction-amount income">R$ 2.500,00</td>
+                                    <td class="table-actions">
+                                        <button class="btn-icon-action view">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button class="btn-icon-action edit">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="btn-icon-action delete">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Tab Despesas -->
+                <div class="tab-content" id="tab-despesas">
+                    <div class="data-table-wrapper">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Data</th>
+                                    <th>Categoria</th>
+                                    <th>Descrição</th>
+                                    <th>Método</th>
+                                    <th>Valor</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>18/06/2026</td>
+                                    <td>Equipamentos</td>
+                                    <td>Lente 50mm</td>
+                                    <td>Cartão de Crédito</td>
+                                    <td class="transaction-amount expense">R$ 1.200,00</td>
+                                    <td class="table-actions">
+                                        <button class="btn-icon-action view">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button class="btn-icon-action edit">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="btn-icon-action delete">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Tab Relatórios -->
+                <div class="tab-content" id="tab-relatorios">
+                    <p style="text-align: center; color: var(--color-gray); padding: 2rem;">
+                        <i class="fas fa-chart-bar" style="font-size: 3rem; margin-bottom: 1rem; display: block;"></i>
+                        Gráficos e relatórios financeiros serão implementados aqui.
+                    </p>
+                </div>
+            </section>
+
+            <!-- Outras seções (Portfolio, Depoimentos, Configurações) serão adicionadas -->
+        </div>
+    </main>
+
+    <!-- Modal: Adicionar Projeto -->
+    <div class="modal-overlay" id="addProjectModal">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h2>Novo Projeto</h2>
+                <button class="modal-close" onclick="closeModal('addProjectModal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="projectForm">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="projectClient">Cliente</label>
+                            <select id="projectClient" required>
+                                <option value="">Selecione um cliente</option>
+                                <option value="1">Maria Silva</option>
+                                <option value="2">João Santos</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="projectTitle">Título do Projeto</label>
+                            <input type="text" id="projectTitle" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="projectDescription">Descrição</label>
+                        <textarea id="projectDescription" rows="3"></textarea>
+                    </div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="projectStatus">Status</label>
+                            <select id="projectStatus">
+                                <option value="aguardando">Aguardando Início</option>
+                                <option value="andamento">Em Andamento</option>
+                                <option value="revisao">Em Revisão</option>
+                                <option value="concluido">Concluído</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="projectProgress">Progresso (%)</label>
+                            <input type="number" id="projectProgress" min="0" max="100" value="0">
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn" style="background: #ccc;" onclick="closeModal('addProjectModal')">Cancelar</button>
+                <button class="btn btn-primary">
+                    <i class="fas fa-save"></i> Salvar Projeto
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Upload de Prova de Fotos -->
+    <div class="modal-overlay" id="addProofModal">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h2>Nova Prova de Fotos</h2>
+                <button class="modal-close" onclick="closeModal('addProofModal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="proofForm">
+                    <div class="form-group">
+                        <label for="proofClient">Cliente</label>
+                        <select id="proofClient" required>
+                            <option value="">Selecione um cliente</option>
+                            <option value="1">Maria Silva</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="proofProject">Projeto</label>
+                        <select id="proofProject" required>
+                            <option value="">Selecione um projeto</option>
+                            <option value="1">Ensaio Corporativo</option>
+                        </select>
+                    </div>
+                    
+                    <!-- Upload Zone -->
+                    <div class="upload-zone" id="uploadZone">
+                        <div class="upload-icon">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                        </div>
+                        <p class="upload-text">Arraste as fotos aqui ou clique para selecionar</p>
+                        <p class="upload-hint">Múltiplas fotos aceitas (JPG, PNG)</p>
+                        <input type="file" id="fileInput" multiple accept="image/*" style="display: none;">
+                    </div>
+                    
+                    <!-- Preview das fotos -->
+                    <div class="image-preview-grid" id="imagePreviewGrid"></div>
+                    
+                    <!-- Configuração de Marca D'água -->
+                    <div class="form-group" style="margin-top: 2rem;">
+                        <label>
+                            <input type="checkbox" id="watermarkEnabled" checked>
+                            Aplicar marca d'água nas fotos
+                        </label>
+                    </div>
+                    <div class="form-group" id="watermarkSettings">
+                        <label for="watermarkText">Texto da Marca D'água</label>
+                        <input type="text" id="watermarkText" value="João V. Cantuária" placeholder="Texto da marca d'água">
+                        <small>O texto aparecerá de forma transparente sobre as fotos</small>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn" style="background: #ccc;" onclick="closeModal('addProofModal')">Cancelar</button>
+                <button class="btn btn-primary" id="uploadProofBtn">
+                    <i class="fas fa-upload"></i> Upload Fotos
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Supabase SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../supabase-config.js"></script>
+    <script src="../dashboard.js"></script>
+    <script src="admin.js"></script>
+</body>
+</html>

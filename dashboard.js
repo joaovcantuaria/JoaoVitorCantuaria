@@ -3,20 +3,55 @@
 // ========================================
 
 // Verificar autenticação ao carregar
-function checkAuthentication() {
-    const token = localStorage.getItem('authToken') || sessionStorage.getItem('authToken');
+async function checkAuthentication() {
+    // Verificar sessão do Supabase
+    const { data: { session }, error } = await supabase.auth.getSession();
     
-    if (!token) {
+    if (!session) {
         // Não está logado, redirecionar para login
         window.location.href = 'login.html';
         return false;
     }
     
-    // Carregar dados do usuário
-    const userData = localStorage.getItem('userData') || sessionStorage.getItem('userData');
-    if (userData) {
-        const user = JSON.parse(userData);
-        updateUserInfo(user);
+    // Carregar dados do usuário do Supabase
+    try {
+        const { data: userData, error: userError } = await supabase
+            .from('usuarios')
+            .select('*')
+            .eq('id', session.user.id)
+            .single();
+        
+        if (userData) {
+            updateUserInfo({
+                id: userData.id,
+                name: userData.nome_completo,
+                email: userData.email,
+                phone: userData.telefone,
+                company: userData.empresa
+            });
+            
+            // Salvar no localStorage para acesso rápido
+            localStorage.setItem('userData', JSON.stringify({
+                id: userData.id,
+                name: userData.nome_completo,
+                email: userData.email
+            }));
+        } else {
+            // Se não tem dados na tabela, usar dados básicos do auth
+            updateUserInfo({
+                id: session.user.id,
+                name: session.user.email.split('@')[0],
+                email: session.user.email
+            });
+        }
+    } catch (error) {
+        console.error('Erro ao carregar dados do usuário:', error);
+        // Mesmo com erro, usa dados básicos
+        updateUserInfo({
+            id: session.user.id,
+            name: session.user.email.split('@')[0],
+            email: session.user.email
+        });
     }
     
     return true;
@@ -37,10 +72,12 @@ function updateUserInfo(user) {
     }
 }
 
-// Executar verificação
-if (!checkAuthentication()) {
-    throw new Error('Não autenticado');
-}
+// Executar verificação (agora assíncrona)
+checkAuthentication().then(isAuthenticated => {
+    if (!isAuthenticated) {
+        throw new Error('Não autenticado');
+    }
+});
 
 // ========================================
 // ELEMENTOS DO DOM
@@ -128,9 +165,12 @@ navItems.forEach(item => {
 // LOGOUT
 // ========================================
 if (logoutBtn) {
-    logoutBtn.addEventListener('click', () => {
+    logoutBtn.addEventListener('click', async () => {
         if (confirm('Deseja realmente sair?')) {
-            // Limpar dados de autenticação
+            // Fazer logout no Supabase
+            await supabase.auth.signOut();
+            
+            // Limpar dados locais
             localStorage.removeItem('authToken');
             localStorage.removeItem('userData');
             sessionStorage.removeItem('authToken');
@@ -146,12 +186,34 @@ if (logoutBtn) {
 // FUNCIONALIDADES DOS PROJETOS
 // ========================================
 
-// Simular carregamento de projetos
-function loadProjects() {
-    // Aqui você faria uma requisição real à API
-    // Exemplo: fetch('/api/projects')
-    
-    console.log('Projetos carregados');
+// Carregar projetos do Supabase
+async function loadProjects() {
+    try {
+        // Obter usuário atual
+        const { data: { session } } = await supabase.auth.getSession();
+        
+        if (!session) return;
+        
+        // Buscar projetos do usuário
+        const { data: projetos, error } = await supabase
+            .from('projetos')
+            .select('*')
+            .eq('cliente_id', session.user.id)
+            .order('data_criacao', { ascending: false });
+        
+        if (error) {
+            console.error('Erro ao carregar projetos:', error);
+            return;
+        }
+        
+        console.log('Projetos carregados:', projetos);
+        
+        // Aqui você pode atualizar a interface com os projetos reais
+        // Por exemplo, popular a lista de projetos dinamicamente
+        
+    } catch (error) {
+        console.error('Erro ao carregar projetos:', error);
+    }
 }
 
 // ========================================
@@ -334,9 +396,13 @@ if (userMenu) {
         // Logout do dropdown
         const logoutDropdown = dropdown.querySelector('.logout-dropdown');
         if (logoutDropdown) {
-            logoutDropdown.addEventListener('click', (e) => {
+            logoutDropdown.addEventListener('click', async (e) => {
                 e.preventDefault();
                 if (confirm('Deseja realmente sair?')) {
+                    // Fazer logout no Supabase
+                    await supabase.auth.signOut();
+                    
+                    // Limpar dados locais
                     localStorage.clear();
                     sessionStorage.clear();
                     window.location.href = 'login.html';

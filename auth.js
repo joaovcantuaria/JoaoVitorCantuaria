@@ -1,9 +1,7 @@
 // ========================================
-// SISTEMA DE AUTENTICAÇÃO
+// SISTEMA DE AUTENTICAÇÃO COM SUPABASE
+// João V. Cantuária - Publicidade e Fotografia
 // ========================================
-
-// Configuração (substitua com seu backend real)
-const API_URL = 'https://seu-backend.com/api'; // Altere para sua API
 
 // Elementos do DOM
 const loginForm = document.getElementById('loginForm');
@@ -70,6 +68,163 @@ function validatePhone(phone) {
 }
 
 // ========================================
+// FUNÇÕES SUPABASE
+// ========================================
+
+// LOGIN com Supabase
+async function loginUser(email, password) {
+    try {
+        // Fazer login no Supabase
+        const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
+            email: email,
+            password: password
+        });
+
+        if (authError) throw authError;
+
+        // Buscar dados adicionais do usuário
+        const { data: userData, error: userError } = await supabase
+            .from('usuarios')
+            .select('*')
+            .eq('id', authData.user.id)
+            .single();
+
+        if (userError) {
+            // Se não encontrou dados, criar registro básico
+            const { error: insertError } = await supabase
+                .from('usuarios')
+                .insert([{
+                    id: authData.user.id,
+                    email: authData.user.email,
+                    nome_completo: authData.user.email.split('@')[0]
+                }]);
+            
+            if (insertError) console.error('Erro ao criar registro:', insertError);
+        }
+
+        return {
+            success: true,
+            user: {
+                id: authData.user.id,
+                email: authData.user.email,
+                name: userData?.nome_completo || authData.user.email,
+                phone: userData?.telefone || '',
+                company: userData?.empresa || ''
+            },
+            token: authData.session.access_token
+        };
+
+    } catch (error) {
+        console.error('Erro no login:', error);
+        return {
+            success: false,
+            message: getSupabaseErrorMessage(error.message)
+        };
+    }
+}
+
+// CADASTRO com Supabase
+async function registerUser(userData) {
+    try {
+        // 1. Criar usuário na autenticação Supabase
+        const { data: authData, error: authError } = await supabase.auth.signUp({
+            email: userData.email,
+            password: userData.password,
+            options: {
+                data: {
+                    nome_completo: `${userData.firstName} ${userData.lastName}`
+                }
+            }
+        });
+
+        if (authError) throw authError;
+
+        // 2. Salvar dados adicionais na tabela usuarios
+        const { error: dbError } = await supabase
+            .from('usuarios')
+            .insert([{
+                id: authData.user.id,
+                email: userData.email,
+                nome_completo: `${userData.firstName} ${userData.lastName}`,
+                telefone: userData.phone,
+                empresa: userData.company || ''
+            }]);
+
+        if (dbError) {
+            console.error('Erro ao salvar dados:', dbError);
+            // Não bloqueia o cadastro se falhar
+        }
+
+        return {
+            success: true,
+            message: 'Cadastro realizado com sucesso! Você já pode fazer login.'
+        };
+
+    } catch (error) {
+        console.error('Erro no cadastro:', error);
+        return {
+            success: false,
+            message: getSupabaseErrorMessage(error.message)
+        };
+    }
+}
+
+// RECUPERAR SENHA com Supabase
+async function sendPasswordReset(email) {
+    try {
+        const { error } = await supabase.auth.resetPasswordForEmail(email, {
+            redirectTo: window.location.origin + '/reset-password.html'
+        });
+
+        if (error) throw error;
+
+        return {
+            success: true,
+            message: 'E-mail de recuperação enviado com sucesso!'
+        };
+
+    } catch (error) {
+        console.error('Erro ao enviar e-mail:', error);
+        return {
+            success: false,
+            message: getSupabaseErrorMessage(error.message)
+        };
+    }
+}
+
+// LOGOUT
+async function logout() {
+    await supabase.auth.signOut();
+    localStorage.removeItem('authToken');
+    localStorage.removeItem('userData');
+    sessionStorage.removeItem('authToken');
+    sessionStorage.removeItem('userData');
+    window.location.href = 'login.html';
+}
+
+// Mensagens de erro em português
+function getSupabaseErrorMessage(message) {
+    const errors = {
+        'Invalid login credentials': 'E-mail ou senha incorretos.',
+        'Email not confirmed': 'Por favor, confirme seu e-mail antes de fazer login.',
+        'User already registered': 'Este e-mail já está cadastrado.',
+        'Password should be at least 6 characters': 'A senha deve ter no mínimo 6 caracteres.',
+        'Unable to validate email address': 'E-mail inválido.',
+        'Signup requires a valid password': 'Senha inválida.',
+        'Invalid email': 'E-mail inválido.',
+        'Email rate limit exceeded': 'Muitas tentativas. Aguarde alguns minutos.'
+    };
+    
+    for (const [key, value] of Object.entries(errors)) {
+        if (message.includes(key)) {
+            return value;
+        }
+    }
+    
+    return message || 'Erro ao processar requisição.';
+}
+
+// ========================================
 // LOGIN
 // ========================================
 if (loginForm) {
@@ -91,19 +246,14 @@ if (loginForm) {
             return;
         }
         
-        // Simulação de login (substitua com chamada real à API)
         try {
             showMessage('Fazendo login...', 'success');
             
-            // Simular chamada à API
-            const response = await simulateAPICall({
-                email,
-                password,
-                remember
-            });
+            // Login real com Supabase
+            const response = await loginUser(email, password);
             
             if (response.success) {
-                // Salvar token
+                // Salvar dados
                 if (remember) {
                     localStorage.setItem('authToken', response.token);
                     localStorage.setItem('userData', JSON.stringify(response.user));
@@ -114,15 +264,15 @@ if (loginForm) {
                 
                 showMessage('Login realizado com sucesso! Redirecionando...', 'success');
                 
-                // Redirecionar para área do cliente
+                // Redirecionar
                 setTimeout(() => {
                     window.location.href = 'area-cliente.html';
-                }, 1500);
+                }, 1000);
             } else {
-                showMessage(response.message || 'Erro ao fazer login.', 'error');
+                showMessage(response.message, 'error');
             }
         } catch (error) {
-            showMessage('Erro ao conectar com o servidor. Tente novamente.', 'error');
+            showMessage('Erro ao conectar. Verifique sua internet.', 'error');
             console.error('Erro:', error);
         }
     });
@@ -175,19 +325,18 @@ if (registerForm) {
             return;
         }
         
-        // Simulação de cadastro (substitua com chamada real à API)
         try {
             showMessage('Criando sua conta...', 'success');
             
-            // Simular chamada à API
-            const response = await simulateAPICall({
+            // Cadastro real com Supabase
+            const response = await registerUser({
                 firstName,
                 lastName,
                 email,
                 phone,
                 company,
                 password
-            }, 1500);
+            });
             
             if (response.success) {
                 showMessage('Conta criada com sucesso! Redirecionando para login...', 'success');
@@ -197,10 +346,10 @@ if (registerForm) {
                     window.location.href = 'login.html';
                 }, 2000);
             } else {
-                showMessage(response.message || 'Erro ao criar conta.', 'error');
+                showMessage(response.message, 'error');
             }
         } catch (error) {
-            showMessage('Erro ao conectar com o servidor. Tente novamente.', 'error');
+            showMessage('Erro ao conectar. Verifique sua internet.', 'error');
             console.error('Erro:', error);
         }
     });
@@ -247,15 +396,15 @@ if (forgotPasswordForm) {
         }
         
         try {
-            // Simular chamada à API
-            const response = await simulateAPICall({ email }, 1000);
+            // Enviar e-mail de recuperação com Supabase
+            const response = await sendPasswordReset(email);
             
             if (response.success) {
                 alert('Instruções enviadas para seu e-mail!');
                 forgotPasswordModal.classList.remove('show');
                 forgotPasswordForm.reset();
             } else {
-                alert('Erro ao enviar instruções. Verifique o e-mail.');
+                alert(response.message || 'Erro ao enviar instruções. Verifique o e-mail.');
             }
         } catch (error) {
             alert('Erro ao conectar com o servidor. Tente novamente.');
@@ -265,113 +414,43 @@ if (forgotPasswordForm) {
 }
 
 // ========================================
-// LOGIN SOCIAL (Simulado)
+// LOGIN SOCIAL COM SUPABASE
 // ========================================
 const socialButtons = document.querySelectorAll('.btn-social');
 
 socialButtons.forEach(button => {
-    button.addEventListener('click', () => {
-        const provider = button.classList.contains('btn-google') ? 'Google' : 'Facebook';
-        showMessage(`Login com ${provider} será implementado em breve!`, 'success');
+    button.addEventListener('click', async () => {
+        const provider = button.classList.contains('btn-google') ? 'google' : 'facebook';
         
-        // Aqui você implementaria a integração real com Google/Facebook OAuth
-        // Exemplo: Google Sign-In, Facebook Login SDK
+        try {
+            const { data, error } = await supabase.auth.signInWithOAuth({
+                provider: provider,
+                options: {
+                    redirectTo: window.location.origin + '/area-cliente.html'
+                }
+            });
+            
+            if (error) {
+                showMessage(`Erro ao conectar com ${provider.charAt(0).toUpperCase() + provider.slice(1)}`, 'error');
+                console.error(error);
+            }
+        } catch (error) {
+            showMessage(`Login com ${provider.charAt(0).toUpperCase() + provider.slice(1)} em desenvolvimento!`, 'error');
+            console.error('Erro:', error);
+        }
     });
 });
 
-// ========================================
-// SIMULAÇÃO DE API (Remova em produção)
-// ========================================
-function simulateAPICall(data, delay = 1000) {
-    return new Promise((resolve) => {
-        setTimeout(() => {
-            // Simulação: sempre retorna sucesso
-            // Em produção, substitua com fetch() real para sua API
-            
-            if (data.email && data.password) {
-                // Login
-                resolve({
-                    success: true,
-                    token: 'fake-jwt-token-' + Date.now(),
-                    user: {
-                        id: 1,
-                        name: 'Usuário Teste',
-                        email: data.email
-                    }
-                });
-            } else if (data.firstName) {
-                // Cadastro
-                resolve({
-                    success: true,
-                    message: 'Cadastro realizado com sucesso!'
-                });
-            } else {
-                // Recuperação de senha
-                resolve({
-                    success: true,
-                    message: 'E-mail de recuperação enviado!'
-                });
-            }
-        }, delay);
-    });
-}
 
-// ========================================
-// EXEMPLO DE INTEGRAÇÃO REAL COM API
-// ========================================
-/*
-async function loginUser(email, password) {
-    try {
-        const response = await fetch(`${API_URL}/auth/login`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ email, password })
-        });
-        
-        const data = await response.json();
-        
-        if (!response.ok) {
-            throw new Error(data.message || 'Erro ao fazer login');
-        }
-        
-        return data;
-    } catch (error) {
-        throw error;
-    }
-}
-
-async function registerUser(userData) {
-    try {
-        const response = await fetch(`${API_URL}/auth/register`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(userData)
-        });
-        
-        const data = await response.json();
-        
-        if (!response.ok) {
-            throw new Error(data.message || 'Erro ao criar conta');
-        }
-        
-        return data;
-    } catch (error) {
-        throw error;
-    }
-}
-*/
 
 // ========================================
 // VERIFICAR SE USUÁRIO JÁ ESTÁ LOGADO
 // ========================================
-function checkAuth() {
-    const token = localStorage.getItem('authToken') || sessionStorage.getItem('authToken');
+async function checkAuth() {
+    // Verificar sessão no Supabase
+    const { data: { session } } = await supabase.auth.getSession();
     
-    if (token && (window.location.pathname.includes('login.html') || window.location.pathname.includes('cadastro.html'))) {
+    if (session && (window.location.pathname.includes('login.html') || window.location.pathname.includes('cadastro.html'))) {
         // Se já está logado e tenta acessar login/cadastro, redireciona
         window.location.href = 'area-cliente.html';
     }
